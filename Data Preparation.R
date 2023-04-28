@@ -13,7 +13,7 @@ getwd() # set working directory appropriately with command setwd()
 # data available under the following url:
 browseURL(url = "https://data.geo.admin.ch/browser/index.html#/collections/ch.bak.halteplaetze-jenische_sinti_roma/items/halteplaetze-jenische_sinti_roma?.asset=asset-halteplaetze-jenische_sinti_roma_2056.xlsx.zip")
 
-# downloading and temporarirly storing file
+# downloading and temporarily storing file
 url2 <- "https://data.geo.admin.ch/browser/index.html#/collections/ch.bak.halteplaetze-jenische_sinti_roma/items/halteplaetze-jenische_sinti_roma?.asset=asset-halteplaetze-jenische_sinti_roma_2056.xlsx.zip"
 temp_file <- tempfile()
 download.file(url2, temp_file)
@@ -31,5 +31,10 @@ data = read.table("halteplaetze-jenische_sinti_roma_2056.xlsx",sep=";",header=T)
 data2 = read.table("halteplaetze-jenische_sinti_roma_2056.csv",sep=";",header=T)
 head(data)
 
+# NA values might have to be removed at a later point
+# Identify missing values
+missing_values <- is.na(df)
 
+# remove missing values
+data_clean <- df[complete.cases(data2),]
 

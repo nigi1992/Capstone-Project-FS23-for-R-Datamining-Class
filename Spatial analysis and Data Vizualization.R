@@ -51,6 +51,31 @@ ggmap(switzerland_map) + geom_sf(data = data_clean, aes(x = "E-Koordinate", y = 
 
 
 # Conduct spatial analysis
-# For example, you could count the number of locations by canton
+# Count the number of locations by canton
 canton_count <- aggregate(data_sf["Kanton"], by = list(data_sf$Kanton), length)
-colnames(canton_count) <- c("Kanton", "Nr. Kanton")
+colnames(canton_count) <- c("Kanton", "Anzahl_Locations", "Coordinates")
+view(canton_count)                          
+
+#Bar Chart
+ggplot(canton_count, aes(x = Kanton, y = Anzahl_Locations)) +
+  geom_bar(stat = "identity") #nope
+
+ggplot(canton_count$Kanton, canton_count$Anzahl_Spots, aes(x=cty, y = hwy)) + geom_bar(x=Kanton) #nöööö
+# doesn't work
+
+# Spots per Kanton
+# have to rename because of ä and empty space
+colnames(data_clean)
+colnames(data_clean)[9] <- 'Anzahl_Spots'
+
+# Ggplot geom_bar
+ggplot(data_clean, aes(x = Kanton, y = Anzahl_Spots)) +
+  geom_bar(stat = "identity") + ggtitle("Anzahl Spots pro Kanton")
+save(ggplot, file = here("data", "ggplot2.RData")) #saving ggplot in R format
+ggsave(file = here("images", "Image2.png")) #saving as image
+
+colnames(data_clean)
+colnames(data_clean)[2] <- 'KantonID'
+ggplot(data_clean, aes(x = Kanton, y = KantonID)) +
+  geom_bar(stat = "identity") + ggtitle("Anzahl Spots pro Kanton")
+# wrong not yet there. need to count KantonID differently. Maybe with a aggregate function from above

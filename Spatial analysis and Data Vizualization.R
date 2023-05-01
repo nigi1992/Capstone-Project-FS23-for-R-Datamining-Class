@@ -30,6 +30,10 @@ library(ggmap)
 
 data_sf <- st_as_sf(data_clean, coords = c("E-Koordinate", "N-Koordinate"), crs = "+proj=utm +zone=32 +ellps=WGS84 +datum=WGS84 +units=m +no_defs")
 
+# suggestion to avoid crs confusion with R
+data_sf2 <- st_as_sf(data_clean, coords = c("E-Koordinate", "N-Koordinate"), crs = 32632)
+data_sf_wgs84b <- st_transform(data_sf, crs = 4326)
+
 # Get the bounding box for Switzerland
 switzerland_bbox <- c(left = 5.96, bottom = 45.82, right = 10.49, top = 47.81)
 
@@ -40,11 +44,16 @@ API_KEY <- rstudioapi::askForPassword()
 key=API_KEY
 
 register_google(key)
+# try with openstreetmap or stamen instead!
+
+dev.off()# per suggestion dev off
+dev.control()
+dev.new() # revert those changes
 
 # Get a map of Switzerland from OpenStreetMap, use cheat sheet for ggmap
 # 'citation("ggmap")'!
 switzerland_map <- get_map(location = switzerland_bbox, maptype = "roadmap", zoom = 7)
-
+dev.control(switzerland_map)
 # Turn coordinates numeric
 data_clean$`E-Koordinate` <- as.numeric(data_clean$`E-Koordinate`)
 data_clean$`N-Koordinate` <- as.numeric(data_clean$`N-Koordinate`)
@@ -56,7 +65,7 @@ ggmap(switzerland_map) + geom_sf(data = data_sf, aes(x = "E-Koordinate", y = "N-
 # did not work out. Cant overlay the data over the map. Moving on.
 
 ggmap(switzerland_map) +
-  geom_sf(data = data_sf, aes(x = E-Koordinate, y = N-Koordinate))
+  geom_sf(data = data_sf_wgs84b, aes(x = E-Koordinate, y = N-Koordinate))
 
 ggmap(switzerland_map) +
   geom_sf(data = data_sf, aes(x = `E-Koordinate`, y = `N-Koordinate`))
@@ -64,7 +73,7 @@ ggmap(switzerland_map) +
 st_crs(data_sf)
 data_sf_wgs84 <- st_transform(data_sf, crs = 4326)
 ggmap(switzerland_map) +
-  geom_sf(data = data_sf_wgs84)
+  geom_sf(data = data_sf_wgs84b)
 
 # Conduct spatial analysis
 # Count the number of locations by canton

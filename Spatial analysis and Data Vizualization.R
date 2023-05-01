@@ -34,31 +34,48 @@ data_sf <- st_as_sf(data_clean, coords = c("E-Koordinate", "N-Koordinate"), crs 
 switzerland_bbox <- c(left = 5.96, bottom = 45.82, right = 10.49, top = 47.81)
 
 # dang it! Google now requires an API Key, will have to use an API after all
-ggmap::register_google()
+ggmap::register_google(key)
 browseURL(url = "https://mapsplatform.google.com/")
-api_key <- rstudioapi::askForPassword()
-register_google(api_key)
+API_KEY <- rstudioapi::askForPassword()
+key=API_KEY
+
+register_google(key)
 
 # Get a map of Switzerland from OpenStreetMap, use cheat sheet for ggmap
 # 'citation("ggmap")'!
 switzerland_map <- get_map(location = switzerland_bbox, maptype = "roadmap", zoom = 7)
 
+# Turn coordinates numeric
+data_clean$`E-Koordinate` <- as.numeric(data_clean$`E-Koordinate`)
+data_clean$`N-Koordinate` <- as.numeric(data_clean$`N-Koordinate`)
+
 # Plot the map and the spatial data
 ggmap(switzerland_map) + geom_sf() #nope
 ggmap(switzerland_map) + geom_sf(data = data_sf) #nada
-ggmap(switzerland_map) + geom_sf(data = data_clean, aes(x = "E-Koordinate", y = "N-Koordinate")) #niente
+ggmap(switzerland_map) + geom_sf(data = data_sf, aes(x = "E-Koordinate", y = "N-Koordinate")) #niente
 # did not work out. Cant overlay the data over the map. Moving on.
 
+ggmap(switzerland_map) +
+  geom_sf(data = data_sf, aes(x = E-Koordinate, y = N-Koordinate))
+
+ggmap(switzerland_map) +
+  geom_sf(data = data_sf, aes(x = `E-Koordinate`, y = `N-Koordinate`))
+
+st_crs(data_sf)
+data_sf_wgs84 <- st_transform(data_sf, crs = 4326)
+ggmap(switzerland_map) +
+  geom_sf(data = data_sf_wgs84)
 
 # Conduct spatial analysis
 # Count the number of locations by canton
-canton_count <- aggregate(data_sf["Kanton"], by = list(data_sf$Kanton), length)
-colnames(canton_count) <- c("Kanton", "Anzahl_Locations", "Coordinates")
-view(canton_count)                          
+
+canton_count2 <- aggregate(data_clean["Kanton"], by = list(data_clean$Kanton), length)
+colnames(canton_count2) <- c("Kanton", "Anzahl_Locations")
 
 #Bar Chart
-ggplot(canton_count, aes(x = Kanton, y = Anzahl_Locations)) +
-  geom_bar(stat = "identity") #nope
+ggplot(canton_count2, aes(x = Kanton, y = Anzahl_Locations)) +
+  geom_bar(stat = "identity")
+
 
 ggplot(canton_count$Kanton, canton_count$Anzahl_Spots, aes(x=cty, y = hwy)) + geom_bar(x=Kanton) #nöööö
 # doesn't work
@@ -78,4 +95,4 @@ colnames(data_clean)
 colnames(data_clean)[2] <- 'KantonID'
 ggplot(data_clean, aes(x = Kanton, y = KantonID)) +
   geom_bar(stat = "identity") + ggtitle("Anzahl Spots pro Kanton")
-# wrong not yet there. need to count KantonID differently. Maybe with a aggregate function from above
+# wrong not yet there. need to count KantonID differently. Maybe with an aggregate function from above

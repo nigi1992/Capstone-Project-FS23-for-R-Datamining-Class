@@ -39,8 +39,8 @@ ggmap(switzerland_map3) +
        subtitle = "Differentiated by Platz Status and Platzart")
 
 # saving plot
-save(ggplot, file = here("data", "ggplotMap.RData")) #saving ggplot in R format
-ggsave(file = here("images", "Map.png")) #saving as image
+save(ggplot, file = here("Output Data", "ggplotMap.RData")) #saving ggplot in R format
+ggsave(file = here("Images", "Map.png")) #saving as image
 
 
 ## Scatter plot showing relationship between number of vans at each spot and its location in CH
@@ -70,8 +70,8 @@ ggmap(switzerland_map3) +
        subtitle = "Differentiated by Platz Status, Platzart und Anzahl Spots")
 
 # saving plot
-save(ggplot, file = here("data", "ggplotMap2.RData")) #saving ggplot in R format
-ggsave(file = here("images", "Map2.png")) #saving as image
+save(ggplot, file = here("Output Data", "ggplotMap2.RData")) #saving ggplot in R format
+ggsave(file = here("Images", "Map2.png")) #saving as image
 
 # Create a scatter plot of the clusters and underlying with map
 ggmap(switzerland_map3) +
@@ -82,5 +82,5 @@ ggmap(switzerland_map3) +
   labs(title = "Clusters of spots for Jenische, Sinti, and Roma in Switzerland",
        subtitle = "Based on hierarchical clustering")
 # saving plot
-save(ggplot, file = here("data", "ggplotMap3.RData")) #saving ggplot in R format
-ggsave(file = here("images", "Map3.png")) #saving as image
+save(ggplot, file = here("Output Data", "ggplotMap3.RData")) #saving ggplot in R format
+ggsave(file = here("Images", "Map3.png")) #saving as image

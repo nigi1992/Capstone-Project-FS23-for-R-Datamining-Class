@@ -27,8 +27,8 @@ data_sf <- st_as_sf(data_clean, coords = c("Osten", "Norden"), crs = "+proj=utm 
 ggplot(data_sf) + geom_sf() + labs(title = "Geolocations of Caravan Spots for Fahrende in Switzerland", x="Longitude", y="Latitude")
 
 library(here)
-save(ggplot, file = here("data", "ggplot1.RData")) #saving ggplot in R format
-ggsave(file = here("images", "Image1.png")) #saving as image
+save(ggplot, file = here("Output Data", "ggplot1.RData")) #saving ggplot in R format
+ggsave(file = here("Images", "Image1.png")) #saving as image
 
 ## Conduct spatial analysis
 ## Count the number of locations by canton
@@ -50,8 +50,8 @@ ggplot(data_sorted_location, aes(x = reorder(Kanton, -Anzahl_Locations), y = Anz
   xlab("Kanton") +
   ylab("Anzahl Locations") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
-save(ggplot, file = here("data", "ggplot2.RData")) #saving ggplot in R format
-ggsave(file = here("images", "Image2.png")) #saving as image
+save(ggplot, file = here("Output Data", "ggplot2.RData")) #saving ggplot in R format
+ggsave(file = here("Images", "Image2.png")) #saving as image
 
 ## Spots per Kanton
 # have to rename because of ä and empty space -> Encoding Errors
@@ -61,8 +61,8 @@ colnames(data_clean)[9] <- 'Anzahl_Spots'
 # Ggplot geom_bar
 ggplot(data_clean, aes(x = Kanton, y = Anzahl_Spots)) +
   geom_bar(stat = "identity") + ggtitle("Anzahl Spots pro Kanton")
-save(ggplot, file = here("data", "ggplot3.RData")) #saving ggplot in R format
-ggsave(file = here("images", "Image3.png")) #saving as image
+save(ggplot, file = here("Output Data", "ggplot3.RData")) #saving ggplot in R format
+ggsave(file = here("Images", "Image3.png")) #saving as image
 
 # ranking the canton according to most spots
 # Sum the number of spots for each canton
@@ -78,8 +78,8 @@ ggplot(data_sorted_spots, aes(x = reorder(Kanton, -Anzahl_Spots), y = Anzahl_Spo
   xlab("Kanton") +
   ylab("Anzahl Spots") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
-save(ggplot, file = here("data", "ggplot3.RData")) #saving ggplot in R format
-ggsave(file = here("images", "Image3.png")) #saving as image
+save(ggplot, file = here("Output Data", "ggplot4.RData")) #saving ggplot in R format
+ggsave(file = here("Images", "Image4.png")) #saving as image
 
 ## Distance Matrix to show distance between each spot
 # 'Osten' and 'Norden' are column names for coordinates in data set
@@ -104,10 +104,10 @@ print(distance_matrix_df_with_unit)
 
 library(here)
 # Saving the distance matrix as an RDS file
-saveRDS(distance_matrix_df_with_unit, file = here("data", "distance_matrix_km.rds"))
+saveRDS(distance_matrix_df_with_unit, file = here("Output Data", "distance_matrix_km.rds"))
 
 # Setting the desired folder path and filename
-folder_path <- "/Users/nicolaswaser/New-project-GitHub-first/R/Data Mining in R/Capstone-Project-FS23-for-R-Datamining-Class/data"  
+folder_path <- "/Users/nicolaswaser/New-project-GitHub-first/R/Data Mining in R/Capstone-Project-FS23-for-R-Datamining-Class/Output Data"  
 filename <- "distance_matrix.csv"
 full_path <- file.path(folder_path, filename)
 
@@ -147,8 +147,8 @@ ggplot() +
        subtitle = "Based on hierarchical clustering")
 
 library(here)
-save(ggplot, file = here("data", "ggplot4.RData")) #saving ggplot in R format
-ggsave(file = here("images", "Image4.png")) #saving as image
+save(ggplot, file = here("Output Data", "ggplot5.RData")) #saving ggplot in R format
+ggsave(file = here("Images", "Image5.png")) #saving as image
 
 
 

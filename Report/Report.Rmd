@@ -21,12 +21,145 @@ Fortunately, the URL also contained an Excel File with which I could continue my
 With the “readxl” package I was able to read the data into R Studio. What proved difficult however, was to push the Excel file onto the GitHub Repo into the correct folder. My code did not work, and I ended up having to manually save the file on my Repo and then push it to Github via Commit + Push on R Studio, where it isn’t in the proper “data” folder and on the main instead. After removing some missing values from the table, the data preparation was done, and I could proceed with my actual work. For more details, refer to the “Data Preparation.R” script. For more details, consider the “Data Preparation.R” script.
 
 My main work consists of three scripts: “Spatial Analysis.R”, “Descriptive Stats.R”, and “Data Visualization.R”.
-In the Spatial Analysis Script, I accomplished several tasks. I tried to calculate the distance between each spot and identify clusters, as well as showcasing which cantons have the most locations and the most available spots for caravans. Furthermore, I created a distance matrix, which shows the distance between each location, and I created a scatter plot of 4 clusters. The generated data and plots can be found in the “Data” and the “Images” folder.
+In the Spatial Analysis Script, I accomplished several tasks. With the help of the "sf" and the "ggplot2" packages, I tried to calculate the distance between each spot and identify clusters, 
+```{r}
+library(sf)
+library(ggplot2)
+library(readxl)
+data_sf <- st_as_sf(data_clean, coords = c("Osten", "Norden"), crs = "+proj=utm +zone=32 +ellps=WGS84 +datum=WGS84 +units=m +no_defs")
+# plot the spatial data
+ggplot(data_sf) + geom_sf() + labs(title = "Geolocations of Caravan Spots for Fahrende in Switzerland", x="Longitude", y="Latitude")
+```
+as well as showcasing which cantons have the most locations and the most available spots for caravans.
+```{r}
+# Creating bar plot with ordered cantons
+ggplot(data_sorted_location, aes(x = reorder(Kanton, -Anzahl_Locations), y = Anzahl_Locations)) +
+  geom_bar(stat = "identity") +
+  ggtitle("Anzahl Locations pro Kanton") +
+  xlab("Kanton") +
+  ylab("Anzahl Locations") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+# Create the bar plot with ordered cantons
+ggplot(data_sorted_spots, aes(x = reorder(Kanton, -Anzahl_Spots), y = Anzahl_Spots)) +
+  geom_bar(stat = "identity") +
+  ggtitle("Anzahl Spots pro Kanton") +
+  xlab("Kanton") +
+  ylab("Anzahl Spots") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+Furthermore, I created a distance matrix, which shows the distance between each location, and I created a scatter plot of 4 clusters. 
+```{r}
+# Displaying the distance matrix as a table
+print(distance_matrix_df_with_unit)
+
+# Create a scatter plot of the clusters
+ggplot() +
+  geom_sf(data = sf_data_clean_transformed, aes(color = cluster), show.legend = "point") +
+  scale_color_discrete(name = "Cluster") +
+  theme_minimal() +
+  labs(title = "Clusters of spots for Jenische, Sinti, and Roma in Switzerland",
+       subtitle = "Based on hierarchical clustering")
+```
+The generated data and plots can be found in the “Data” and the “Images” folder.
 In the Descriptive Statistics Script, I conducted some basic statistics, that are supposed to put some of the numbers into perspective.
+```{r}
+# Basic stats of the number of vans at each spot
+mean_dev_van_number <- mean(data_sf$Anzahl_Spots)
+print(mean_dev_van_number)
+stand_dev_van_number <- sd(data_sf$Anzahl_Spots)
+print(stand_dev_van_number)
+median_van_number <- median(data_sf$Anzahl_Spots)
+print(median_van_number)
+range_van_number <- range(data_sf$Anzahl_Spots)
+print(range_van_number)
+mode_van_number <- mode(data_sf$Anzahl_Spots)
+print(mode_van_number)
+
+# total capacity of vans at all spots
+sum_van <- sum(data_sf$Anzahl_Spots)
+print(sum_van)
+
+# Percentage of permanent and temporary spots
+value_counts <- table(data_sf$`Platz Status**`)
+total_platzstatus <- sum(value_counts)
+percentages_platzstatus <- (value_counts/total_platzstatus) * 100
+print(percentages_platzstatus)
+
+# Percentage of each kind of spot
+value_counts2 <- table(data_sf$`Platzart*`)
+total_platzart <- sum(value_counts2)
+percentages_platzart <- (value_counts2/total_platzart) * 100
+print(percentages_platzart)
+
+# percentage of each combo
+contingency_table <- table(data_sf$`Platz Status**`, data_sf$`Platzart*`)
+total_contingency <- sum(contingency_table)
+percentages_joint <- (contingency_table / total_contingency) * 100
+print(percentages_joint)
+
+# Number of spots for each combo
+print(contingency_table)
+```
+
 In the Data Visualization Script, I managed (after repeatedly trying) to underlie a map of Switzerland under the data of three different plots:
 1.	The first map shows the locations, the kind of spot and its status.
+```{r}
+library(ggmap)
+# Plot the data with more detail
+ggmap(switzerland_map3) +
+  geom_sf(data = sf_data_clean_transformed, inherit.aes = FALSE,
+          aes(color = factor(`Platz Status**`), shape = factor(`Platzart*`))) +
+  scale_color_manual(values = c("1" = "red", "2" = "blue"),
+                     name = "Platz Status",
+                     labels = c("1" = "definitiv", "2" = "provisorisch")) +
+  scale_shape_manual(values = c("1" = 16, "2" = 17, "3" = 18),
+                     name = "Platzart",
+                     labels = c("1" = "Standplatz", "2" = "Durchgangsplatz", "3" = "Transitplatz")) +
+  theme_minimal() +
+  theme(legend.position = "bottom") +
+  labs(title = "Spatial distribution of spots for Jenische, Sinti, and Roma in Switzerland",
+       subtitle = "Differentiated by Platz Status and Platzart")
+```
 2.	The second map shows not only the last two attributes, but also its approximate size.
+```{r}
+## Scatter plot showing relationship between number of vans at each spot and its location in CH
+# creating a scatter plot of the locations with the number of vans at each spot
+ggplot() +
+  geom_sf(data = sf_data_clean_transformed, 
+          aes(size = Anzahl_Spots), show.legend = "point") +
+  scale_size_continuous(name = "Anzahl Spots") +
+  theme_minimal() +
+  labs(title = "Number of Vans at Spots for Jenische, Sinti, and Roma in Switzerland",
+       subtitle = "Size of the points represents the number of vans")
+
+# Underlying this plot with map
+ggmap(switzerland_map3) +
+  geom_sf(data = sf_data_clean_transformed, inherit.aes = FALSE,
+          aes(color = factor(`Platz Status**`), shape = factor(`Platzart*`), size = Anzahl_Spots), show.legend = "point") +
+  scale_color_manual(values = c("1" = "red", "2" = "blue"),
+                     name = "Platz Status",
+                     labels = c("1" = "definitiv", "2" = "provisorisch")) +
+  scale_shape_manual(values = c("1" = 16, "2" = 17, "3" = 18),
+                     name = "Platzart",
+                     labels = c("1" = "Standplatz", "2" = "Durchgangsplatz", "3" = "Transitplatz")) +
+  scale_size_continuous(name = "Anzahl Spots") +
+  theme_minimal() +
+  theme(legend.position = "bottom") +
+  labs(title = "Spatial distribution of spots for Jenische, Sinti, and Roma in Switzerland",
+       subtitle = "Differentiated by Platz Status, Platzart und Anzahl Spots")
+```
 3.	The third map shows the 4 location clusters from the spatial analysis, but with a map.
+```{r}
+# Create a scatter plot of the clusters and underlying with map
+ggmap(switzerland_map3) +
+  geom_sf(data = sf_data_clean_transformed, inherit.aes = FALSE,
+          aes(color = cluster), show.legend = "point") +
+  scale_color_discrete(name = "Cluster") +
+  theme_minimal() +
+  labs(title = "Clusters of spots for Jenische, Sinti, and Roma in Switzerland",
+       subtitle = "Based on hierarchical clustering")
+```
 The Maps can be found in the “Images” folder. The great difficulties partially stemmed from encoding errors, for which some of the columns had to be renamed, different coordination systems, which had to be converted and the Google Maps API, which initially worked, but then stopped (probably due to not having paid their fees). I solved this problem by later switching to Openstreet Map, which ultimately worked just fine. Some of these errors can be viewed in the “Faulty Code Appendix + Suggestions.R” Script.
 
 

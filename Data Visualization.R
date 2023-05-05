@@ -72,3 +72,15 @@ ggmap(switzerland_map3) +
 # saving plot
 save(ggplot, file = here("data", "ggplotMap2.RData")) #saving ggplot in R format
 ggsave(file = here("images", "Map2.png")) #saving as image
+
+# Create a scatter plot of the clusters and underlying with map
+ggmap(switzerland_map3) +
+  geom_sf(data = sf_data_clean_transformed, inherit.aes = FALSE,
+          aes(color = cluster), show.legend = "point") +
+  scale_color_discrete(name = "Cluster") +
+  theme_minimal() +
+  labs(title = "Clusters of spots for Jenische, Sinti, and Roma in Switzerland",
+       subtitle = "Based on hierarchical clustering")
+# saving plot
+save(ggplot, file = here("data", "ggplotMap3.RData")) #saving ggplot in R format
+ggsave(file = here("images", "Map3.png")) #saving as image

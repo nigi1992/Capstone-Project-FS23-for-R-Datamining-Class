@@ -105,7 +105,7 @@ any_empty_strings
 
 ## No good either. Too many unsolvable error messages. Furthermore the list that the API gives is structured weirdly.
 ## The columns are ordered in rows and the values that are supposed to be ordered in rows are arranged in a single cell.
-## Also, for some reason only five out of 55 elements are part of the API List.
+## Also, for some reason only five out of 45 elements are part of the API List.
 ## Luckily, there is a .xlsx Excel doc, in which all the elements are contained and prepared in a orderly fashion.
 
 

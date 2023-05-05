@@ -39,9 +39,19 @@ colnames(canton_count) <- c("Kanton", "Anzahl_Locations")
 #Bar Chart
 ggplot(canton_count, aes(x = Kanton, y = Anzahl_Locations)) +
   geom_bar(stat = "identity")
+
+# ranking the canton according to most locations
+data_sorted_location <- canton_count[order(-canton_count$Anzahl_Locations),]
+
+# Creating bar plot with ordered cantons
+ggplot(data_sorted_location, aes(x = reorder(Kanton, -Anzahl_Locations), y = Anzahl_Locations)) +
+  geom_bar(stat = "identity") +
+  ggtitle("Anzahl Locations pro Kanton") +
+  xlab("Kanton") +
+  ylab("Anzahl Locations") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
 save(ggplot, file = here("data", "ggplot2.RData")) #saving ggplot in R format
 ggsave(file = here("images", "Image2.png")) #saving as image
-
 
 ## Spots per Kanton
 # have to rename because of ä and empty space -> Encoding Errors
@@ -54,6 +64,22 @@ ggplot(data_clean, aes(x = Kanton, y = Anzahl_Spots)) +
 save(ggplot, file = here("data", "ggplot3.RData")) #saving ggplot in R format
 ggsave(file = here("images", "Image3.png")) #saving as image
 
+# ranking the canton according to most spots
+# Sum the number of spots for each canton
+data_sum <- aggregate(data_clean$Anzahl_Spots, by = list(Kanton = data_clean$Kanton), FUN = sum)
+# Rename the columns
+colnames(data_sum) <- c("Kanton", "Anzahl_Spots")
+data_sorted_spots <- data_sum[order(-data_sum$Anzahl_Spots),]
+
+# Create the bar plot with ordered cantons
+ggplot(data_sorted_spots, aes(x = reorder(Kanton, -Anzahl_Spots), y = Anzahl_Spots)) +
+  geom_bar(stat = "identity") +
+  ggtitle("Anzahl Spots pro Kanton") +
+  xlab("Kanton") +
+  ylab("Anzahl Spots") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+save(ggplot, file = here("data", "ggplot3.RData")) #saving ggplot in R format
+ggsave(file = here("images", "Image3.png")) #saving as image
 
 ## Distance Matrix to show distance between each spot
 # 'Osten' and 'Norden' are column names for coordinates in data set
@@ -121,6 +147,7 @@ ggplot() +
   labs(title = "Clusters of spots for Jenische, Sinti, and Roma in Switzerland",
        subtitle = "Based on hierarchical clustering")
 
+library(here)
 save(ggplot, file = here("data", "ggplot4.RData")) #saving ggplot in R format
 ggsave(file = here("images", "Image4.png")) #saving as image
 

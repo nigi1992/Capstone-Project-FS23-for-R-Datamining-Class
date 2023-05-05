@@ -26,9 +26,9 @@ gh(file = "/Users/nicolaswaser/New-project-GitHub-first/R/Data Mining in R/Capst
 # also error message, third parties will have to download file themselves from provided url, continuing the old fashioned way
 
 # reading data old fashioned way
-data = read.table("halteplaetze-jenische_sinti_roma_2056.xlsx",sep=";",header=T)
+data2 = read.table("halteplaetze-jenische_sinti_roma_2056.xlsx",sep=";",header=T)
 # R seems unable to process .xlsx file, have to convert into .csv first
-data2 = read.table("halteplaetze-jenische_sinti_roma_2056.csv",sep=";",header=T)
+data3 = read.table("halteplaetze-jenische_sinti_roma_2056.csv",sep=";",header=T)
 head(data)
 
 # NA values might have to be removed at a later point
@@ -36,5 +36,5 @@ head(data)
 missing_values <- is.na(df)
 
 # remove missing values
-data_clean <- df[complete.cases(data2),]
+data_clean <- df[complete.cases(data3),]
 

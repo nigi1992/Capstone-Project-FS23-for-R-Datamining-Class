@@ -29,7 +29,7 @@ subfeatures <- data$fields$values
 
 # table to be filled later with values
 fahrende_table <- matrix(nrow = 21, ncol = 1, byrow = T)
-location_data <- data.frame()
+location_data <- data.frame(features)
 
 # Approach 1, ChatGpt Proposition
 for (i in 1:length(features)) {

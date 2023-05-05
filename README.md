@@ -29,4 +29,5 @@ You'll find my plotted figures and maps in the folder «Images».
 ## R Markdown
 The R Markdown is saved as "Report.Rmd" in the "Report" folder.
 There you'll also find it as a HTML file under "report.html"
+Please consult the R Markdown document though, as it contains code chuncks that display the generated plots and data.
 

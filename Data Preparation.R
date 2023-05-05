@@ -23,7 +23,7 @@ df <- read_excel("halteplaetze-jenische_sinti_roma_2056.xlsx") # weirdly this co
 
 # pushing excel file to Github
 gh(file = "/Users/nicolaswaser/New-project-GitHub-first/R/Data Mining in R/Capstone-Project-FS23-for-R-Datamining-Class/halteplaetze-jenische_sinti_roma_2056.csv", repo = "nigi1992/Capstone-Project-FS23-for-R-Datamining-Class", message = "pushing excel file to github for further use")
-# also error message, third parties will have to download file themselves from provided url, continuing the old fashioned way
+# also error message, third parties will have to download file themselves from provided url or Github Repo, continuing the old fashioned way
 
 # reading data old fashioned way
 data2 = read.table("halteplaetze-jenische_sinti_roma_2056.xlsx",sep=";",header=T)

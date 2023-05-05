@@ -55,8 +55,7 @@ save(ggplot, file = here("data", "ggplot3.RData")) #saving ggplot in R format
 ggsave(file = here("images", "Image3.png")) #saving as image
 
 
-# Next: more spatial analysis and descriptive statistics
-
+## Distance Matrix to show distance between each spot
 # 'Osten' and 'Norden' are column names for coordinates in data set
 coordinates <- data_clean[, c("Osten", "Norden")]
 sf_data_clean <- st_as_sf(data_clean, coords = c("Osten", "Norden"), crs = 2056) # Assuming Swiss CH1903+ / LV95 coordinate reference system (EPSG: 2056)
@@ -67,19 +66,65 @@ distance_matrix <- st_distance(sf_data_clean)
 # Converting the distance matrix to a data frame and round the values, convert to km instead of m
 distance_matrix_df <- round(as.data.frame(distance_matrix / 1000), 2)
 
-# Include the unit (km) in the cell values
+# Including the unit (km) in the cell values
 distance_matrix_df_with_unit <- data.frame(lapply(distance_matrix_df, function(x) paste0(x, " km")))
 
-# Set row and column names to "Standort" values
+# Setting row and column names to "Standort" values
 rownames(distance_matrix_df_with_unit) <- sf_data_clean$Standort
 colnames(distance_matrix_df_with_unit) <- sf_data_clean$Standort
 
-# Display the distance matrix as a table
+# Displaying the distance matrix as a table
 print(distance_matrix_df_with_unit)
 
+library(here)
+# Saving the distance matrix as an RDS file
+saveRDS(distance_matrix_df_with_unit, file = here("data", "distance_matrix_km.rds"))
+
+# Setting the desired folder path and filename
+folder_path <- "/Users/nicolaswaser/New-project-GitHub-first/R/Data Mining in R/Capstone-Project-FS23-for-R-Datamining-Class/data"  
+filename <- "distance_matrix.csv"
+full_path <- file.path(folder_path, filename)
+
+# Saving the distance matrix as a CSV file in the specified folder
+write.csv(distance_matrix_df_with_unit, full_path, row.names = TRUE)
+
+# Saving the distance matrix as a CSV file in main
+write.csv(distance_matrix_df_with_unit, "distance_matrix_km.csv", row.names = TRUE)
 
 
+# ie. Filtering locations by kind of spot (e.g., Transitplatz):
+# Transitplatz <- sf_data_clean[sf_data_clean$`Platzart*` == "3", ]
 
+
+## Identify clusters
+
+library(sf)
+library(ggplot2)
+
+# Calculating hierarchical clustering
+hc <- hclust(as.dist(distance_matrix))
+
+# Cut the tree into a desired number of clusters (k = number of desired clusters)
+cluster_labels <- cutree(hc, k = 4)
+
+# Add cluster labels to the original sf_data
+sf_data_clean$cluster <- factor(cluster_labels)
+
+# Transform the data to match the base map CRS (EPSG:4326)
+sf_data_clean_transformed <- st_transform(sf_data_clean, crs = 4326)
+
+# Create a scatter plot of the clusters
+ggplot() +
+  geom_sf(data = sf_data_clean_transformed, aes(color = cluster), show.legend = "point") +
+  scale_color_discrete(name = "Cluster") +
+  theme_minimal() +
+  labs(title = "Clusters of spots for Jenische, Sinti, and Roma in Switzerland",
+       subtitle = "Based on hierarchical clustering")
+
+save(ggplot, file = here("data", "ggplot4.RData")) #saving ggplot in R format
+ggsave(file = here("images", "Image4.png")) #saving as image
+
+# Maybe underlie with a map?
 
 
 

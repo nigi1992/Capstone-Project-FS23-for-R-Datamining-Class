@@ -1,6 +1,6 @@
-##Data Visualization
+###Data Visualization
 
-# Underlie a map of Switzerland under the spatial data plot
+## Underlie a map of Switzerland under the spatial data plot
 install.packages("ggmap")
 library(ggmap)
 library(sf)
@@ -38,6 +38,37 @@ ggmap(switzerland_map3) +
   labs(title = "Spatial distribution of spots for Jenische, Sinti, and Roma in Switzerland",
        subtitle = "Differentiated by Platz Status and Platzart")
 
-# save plot
+# saving plot
 save(ggplot, file = here("data", "ggplotMap.RData")) #saving ggplot in R format
 ggsave(file = here("images", "Map.png")) #saving as image
+
+
+## Scatter plot showing relationship between number of vans at each spot and its location in CH
+# creating a scatter plot of the locations with the number of vans at each spot
+ggplot() +
+  geom_sf(data = sf_data_clean_transformed, 
+          aes(size = Anzahl_Spots), show.legend = "point") +
+  scale_size_continuous(name = "Anzahl Spots") +
+  theme_minimal() +
+  labs(title = "Number of Vans at Spots for Jenische, Sinti, and Roma in Switzerland",
+       subtitle = "Size of the points represents the number of vans")
+
+# Underlying this plot with map
+ggmap(switzerland_map3) +
+  geom_sf(data = sf_data_clean_transformed, inherit.aes = FALSE,
+          aes(color = factor(`Platz Status**`), shape = factor(`Platzart*`), size = Anzahl_Spots, show.legend = "point")) +
+  scale_color_manual(values = c("1" = "red", "2" = "blue"),
+                     name = "Platz Status",
+                     labels = c("1" = "definitiv", "2" = "provisorisch")) +
+  scale_shape_manual(values = c("1" = 16, "2" = 17, "3" = 18),
+                     name = "Platzart",
+                     labels = c("1" = "Standplatz", "2" = "Durchgangsplatz", "3" = "Transitplatz")) +
+  scale_size_continuous(name = "Anzahl Spots") +
+  theme_minimal() +
+  theme(legend.position = "bottom") +
+  labs(title = "Spatial distribution of spots for Jenische, Sinti, and Roma in Switzerland",
+       subtitle = "Differentiated by Platz Status, Platzart und Anzahl Spots")
+
+# saving plot
+save(ggplot, file = here("data", "ggplotMap2.RData")) #saving ggplot in R format
+ggsave(file = here("images", "Map2.png")) #saving as image
